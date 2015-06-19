@@ -284,10 +284,10 @@ void QGLRenderThread::paintGL(void)
         case 2: // double precision (FP64) shader values
                 dvec2[0] = xpos;
                 dvec2[1] = ypos;
-                glUniform2dv(glGetUniformLocation(ShaderProgram->programId(), "d_c"), 2, dvec2);
+                glUniform2dv(glGetUniformLocation(ShaderProgram->programId(), "d_c"), 1, dvec2);
                 dvec2[0] = -((double)w)/2.0/zoom;
                 dvec2[1] = -((double)h)/2.0/zoom;
-                glUniform2dv(glGetUniformLocation(ShaderProgram->programId(), "d_s"), 2, dvec2);
+                glUniform2dv(glGetUniformLocation(ShaderProgram->programId(), "d_s"), 1, dvec2);
                 tmp = 1./zoom;
                 glUniform1dv(glGetUniformLocation(ShaderProgram->programId(), "d_z"), 1, &tmp);
                 break;
@@ -295,26 +295,26 @@ void QGLRenderThread::paintGL(void)
         case 3: // emulated quadruple precision shader values (quad-single)
                 vec2[0] = (float)xpos;
                 vec2[1] = xpos - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 2, vec2);
+                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 1, vec2);
 
                 vec2[0] = (float)ypos;
                 vec2[1] = ypos - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 2, vec2);
+                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 1, vec2);
 
                 tmp= 1./zoom;
                 vec2[0] = (float)tmp;
                 vec2[1] = tmp - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_z"), 2, vec2);
+                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_z"), 1, vec2);
 
                 tmp= -((double)w)/2.0/zoom;
                 vec2[0] = (float)tmp;
                 vec2[1] = tmp - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_w"), 2, vec2);
+                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_w"), 1, vec2);
 
                 tmp= -((double)h)/2.0/zoom;
                 vec2[0] = (float)tmp;
                 vec2[1] = tmp - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_h"), 2, vec2);
+                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_h"), 1, vec2);
                 break;
             }
 

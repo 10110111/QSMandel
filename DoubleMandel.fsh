@@ -1,4 +1,5 @@
-#version 150
+#version 150 compatibility
+#extension GL_ARB_gpu_shader_fp64: enable
 
 uniform int iterations;
 uniform int frame;

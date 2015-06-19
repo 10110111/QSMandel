@@ -198,12 +198,14 @@ void QGLRenderThread::GLInit(void)
     glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) GLFrame->context()->getProcAddress("glGetUniformLocation");
     glUniform2fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform2fv");
 
-    // collect special handles four double precision
-    glUniform1dv = (PFNGLUNIFORM1DVPROC) GLFrame->context()->getProcAddress("glUniform1dv");
-    glUniform2dv = (PFNGLUNIFORM2DVPROC) GLFrame->context()->getProcAddress("glUniform2dv");
-
-    if(glGetUniformLocation && glUniform1dv && glUniform2dv) // did we get all handles?
+    // FIXME: will have to use glGetStringi() when we actually switch to OpenGL 3.3, since glGetString() isn't supported in core profile
+    const GLubyte* str=glGetString(GL_EXTENSIONS);
+    bool ARB_gpu_shader_fp64_available=strstr((const char*)str,"GL_ARB_gpu_shader_fp64");
+    if(ARB_gpu_shader_fp64_available) // did we get all handles?
         {
+        // collect special handles four double precision
+        glUniform1dv = (PFNGLUNIFORM1DVPROC) GLFrame->context()->getProcAddress("glUniform1dv");
+        glUniform2dv = (PFNGLUNIFORM2DVPROC) GLFrame->context()->getProcAddress("glUniform2dv");
         qDebug() << "Yay! Hardware accelerated double precision enabled.";
         RenderCaps |= 0x04; // yes, we can perform double precision rendering
         }

@@ -12,8 +12,8 @@ uniform float ds_cx0, ds_cx1;
 uniform float ds_cy0, ds_cy1;
 
 
-// Emulation based on Fortran-90 double-single package. See http://crd.lbl.gov/~dhbailey/mpdist/
-// Substract: res = ds_add(a, b) => res = a + b
+// Emulation based on Fortran-90 double-single package. See http://crd-legacy.lbl.gov/~dhbailey/mpdist/
+// Add: res = ds_add(a, b) => res = a + b
 vec2 ds_add (vec2 dsa, vec2 dsb)
 {
 vec2 dsc;
@@ -28,7 +28,7 @@ float t1, t2, e;
  return dsc;
 }
 
-// Substract: res = ds_sub(a, b) => res = a - b
+// Subtract: res = ds_sub(a, b) => res = a - b
 vec2 ds_sub (vec2 dsa, vec2 dsb)
 {
 vec2 dsc;

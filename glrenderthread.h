@@ -23,8 +23,8 @@ public:
     explicit QGLRenderThread(QGLFrame *parent = 0);
     void resizeViewport(const QSize &size);
 
-    void setXpos(double val) {xpos = val;}
-    void setYpos(double val) {ypos = val;}
+    void setXpos(long double val) {xpos = val;}
+    void setYpos(long double val) {ypos = val;}
     void setZoom(double val) {zoom = ((double)(128.))*((double)(exp2(val)));}
     void setIterations(int val) {max_iterations = val;}
     void setRadius(double val) {radius = val;}

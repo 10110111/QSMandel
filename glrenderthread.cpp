@@ -31,6 +31,7 @@ PFNGLUNIFORM2DVPROC glUniform2dv;
 
 typedef void (APIENTRYP PFNGLUNIFORM2FVPROC) (GLint location, GLsizei count, const GLfloat *value);
 PFNGLUNIFORM2FVPROC glUniform2fv;
+PFNGLUNIFORM2FVPROC glUniform3fv;
 
 typedef GLint (APIENTRYP PFNGLGETUNIFORMLOCATIONPROC) (GLuint program, const GLchar *name);
 PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
@@ -80,14 +81,14 @@ void QGLRenderThread::resizeViewport(const QSize &size)
 
 void QGLRenderThread::Drag(const QPoint &dir)
 {
-    xpos = xpos-((double)dir.x())/zoom;
-    ypos = ypos+((double)dir.y())/zoom;
+    xpos = xpos-((long double)dir.x())/zoom;
+    ypos = ypos+((long double)dir.y())/zoom;
 }
 
 void QGLRenderThread::setCenter(const QPoint &pos)
 {
-    xpos = xpos+(double(pos.x())-double(w/2.))/zoom;
-    ypos = ypos-(double(pos.y())-double(h/2.))/zoom;
+    xpos = xpos+(pos.x()-w/2.L)/zoom;
+    ypos = ypos-(pos.y()-h/2.L)/zoom;
 }
 
 // special Point-and-Zoom function
@@ -197,6 +198,7 @@ void QGLRenderThread::GLInit(void)
 
     glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) GLFrame->context()->getProcAddress("glGetUniformLocation");
     glUniform2fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform2fv");
+    glUniform3fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform3fv");
 
     // FIXME: will have to use glGetStringi() when we actually switch to OpenGL 3.3, since glGetString() isn't supported in core profile
     const GLubyte* str=glGetString(GL_EXTENSIONS);
@@ -233,6 +235,7 @@ void QGLRenderThread::paintGL(void)
 {
   double tmp, dvec2[2];
   float vec2[2];
+  float vec3[3];
 
     // common shader values
     ShaderProgram->setUniformValue("iterations", max_iterations);
@@ -295,13 +298,15 @@ void QGLRenderThread::paintGL(void)
                 break;
 
         case 3: // emulated quadruple precision shader values (quad-single)
-                vec2[0] = (float)xpos;
-                vec2[1] = xpos - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 1, vec2);
+                vec3[0] = xpos;
+                vec3[1] = xpos - vec3[0];
+                vec3[2] = xpos - vec3[0] - vec3[1];
+                glUniform3fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 1, vec3);
 
-                vec2[0] = (float)ypos;
-                vec2[1] = ypos - (double)vec2[0];
-                glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 1, vec2);
+                vec3[0] = ypos;
+                vec3[1] = ypos - vec3[0];
+                vec3[2] = ypos - vec3[0] - vec3[1];
+                glUniform3fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 1, vec3);
 
                 tmp= 1./zoom;
                 vec2[0] = (float)tmp;

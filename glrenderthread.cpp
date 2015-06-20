@@ -317,6 +317,8 @@ void QGLRenderThread::paintGL(void)
                 vec2[0] = (float)tmp;
                 vec2[1] = tmp - (double)vec2[0];
                 glUniform2fv(glGetUniformLocation(ShaderProgram->programId(), "qs_h"), 1, vec2);
+
+                ShaderProgram->setUniformValue("one", 1.f);
                 break;
             }
 

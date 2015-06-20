@@ -14,12 +14,19 @@ uniform vec2 qs_h;
 uniform vec2 qs_cx;
 uniform vec2 qs_cy;
 
+// To create false data dependencies to avoid nvidia aggressive
+// math optimization (which can't be turned off on Linux), we 
+// can hide value of x with e.g. x*one, or, possibly faster on
+// some GPUs, (one==1?x:0). On NVidia GeForce GTX 750 Ti the
+// former appears to work a bit faster, so here's the define
+#define hide(x) (x*one)
+uniform float one;
 
 // inline double quick_two_sum(double a, double b, double &err)
 vec2 quick_2sum(float a, float b)
 {
  float s = a + b;			// double s = a + b;
- return vec2(s, b-(s-a));	// err = b - (s - a);
+ return vec2(s, b-(hide(s)-a));	// err = b - (s - a);
 }
 
 /* Computes fl(a+b) and err(a+b).  */
@@ -29,8 +36,8 @@ vec2 two_sum(float a, float b)
 float v,s,e;
  
  s = a+b;				// double s = a + b;
- v = s-a;				// double bb = s - a;
- e = (a-(s-v))+(b-v);	// err = (a - (s - bb)) + (b - bb);
+ v = s-hide(a);				// double bb = s - a;
+ e = (a-(hide(s)-v))+(b-v);	// err = (a - (s - bb)) + (b - bb);
 
  return vec2(s,e);
 }
@@ -361,15 +368,15 @@ vec4 qs_sloppy_add(vec4 a, vec4 b)
   s2 = a.z + b.z;	// s2 = a[2] + b[2];
   s3 = a.w + b.w;	// s3 = a[3] + b[3];  
   
-  v0 = s0 - a.x;	// v0 = s0 - a[0];
-  v1 = s1 - a.y;	// v1 = s1 - a[1];
-  v2 = s2 - a.z;	// v2 = s2 - a[2];
-  v3 = s3 - a.w;	// v3 = s3 - a[3];
+  v0 = s0 - hide(a.x);	// v0 = s0 - a[0];
+  v1 = s1 - hide(a.y);	// v1 = s1 - a[1];
+  v2 = s2 - hide(a.z);	// v2 = s2 - a[2];
+  v3 = s3 - hide(a.w);	// v3 = s3 - a[3];
 
-  u0 = s0 - v0;
-  u1 = s1 - v1;
-  u2 = s2 - v2;
-  u3 = s3 - v3;
+  u0 = s0 - hide(v0);
+  u1 = s1 - hide(v1);
+  u2 = s2 - hide(v2);
+  u3 = s3 - hide(v3);
   
   w0 = a.x - u0;	// w0 = a[0] - u0;
   w1 = a.y - u1;	// w1 = a[1] - u1;

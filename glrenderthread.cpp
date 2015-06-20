@@ -279,6 +279,8 @@ void QGLRenderThread::paintGL(void)
                 vec2[1] = tmp - (double)vec2[0];
                 ShaderProgram->setUniformValue("ds_h0",  vec2[0]);
                 ShaderProgram->setUniformValue("ds_h1",  vec2[1]);
+
+                ShaderProgram->setUniformValue("one", 1.f);
                 break;
 
         case 2: // double precision (FP64) shader values

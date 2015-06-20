@@ -11,6 +11,13 @@ uniform float ds_h0, ds_h1;
 uniform float ds_cx0, ds_cx1;
 uniform float ds_cy0, ds_cy1;
 
+// To create false data dependencies to avoid nvidia aggressive
+// math optimization (which can't be turned off on Linux), we 
+// can hide value of x with e.g. x*one, or, possibly faster on
+// some GPUs, (one==1?x:0). On NVidia GeForce GTX 750 Ti the
+// former appears to work a bit faster, so here's the define
+#define hide(x) (x*one)
+uniform float one;
 
 // Emulation based on Fortran-90 double-single package. See http://crd-legacy.lbl.gov/~dhbailey/mpdist/
 // Add: res = ds_add(a, b) => res = a + b
@@ -20,11 +27,11 @@ vec2 dsc;
 float t1, t2, e;
 
  t1 = dsa.x + dsb.x;
- e = t1 - dsa.x;
+ e = hide(t1) - dsa.x;
  t2 = ((dsb.x - e) + (dsa.x - (t1 - e))) + dsa.y + dsb.y;
 
  dsc.x = t1 + t2;
- dsc.y = t2 - (dsc.x - t1);
+ dsc.y = t2 - (hide(dsc.x) - t1);
  return dsc;
 }
 
@@ -35,11 +42,11 @@ vec2 dsc;
 float e, t1, t2;
 
  t1 = dsa.x - dsb.x;
- e = t1 - dsa.x;
+ e = hide(t1) - dsa.x;
  t2 = ((-dsb.x - e) + (dsa.x - (t1 - e))) + dsa.y - dsb.y;
 
  dsc.x = t1 + t2;
- dsc.y = t2 - (dsc.x - t1);
+ dsc.y = t2 - (hide(dsc.x) - t1);
  return dsc;
 }
 
@@ -78,11 +85,11 @@ float a1, a2, b1, b2, cona, conb, split = 8193.;
  c2 = dsa.x * dsb.y + dsa.y * dsb.x;
 
  t1 = c11 + c2;
- e = t1 - c11;
+ e = t1 - hide(c11);
  t2 = dsa.y * dsb.y + ((c2 - e) + (c11 - (t1 - e))) + c21;
  
  dsc.x = t1 + t2;
- dsc.y = t2 - (dsc.x - t1);
+ dsc.y = t2 - (hide(dsc.x) - t1);
  
  return dsc;
 }

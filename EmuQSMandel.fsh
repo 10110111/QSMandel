@@ -11,8 +11,8 @@ uniform float radius;
 uniform vec2 qs_z;
 uniform vec2 qs_w;
 uniform vec2 qs_h;
-uniform vec3 qs_cx;
-uniform vec3 qs_cy;
+uniform vec4 qs_cx;
+uniform vec4 qs_cy;
 
 // To create false data dependencies to avoid nvidia aggressive
 // math optimization (which can't be turned off on Linux), we 
@@ -524,8 +524,8 @@ float qs_mandel(void)
  vec4 qs_ty = vec4(gl_TexCoord[0].y, vec3(0.));
 
  // initialize complex variable with respect to current position, zoom, ...
- vec4 cx = qs_add(qs_add(vec4(qs_cx,0.),qs_mul(qs_tx,vec4(qs_z,0.,0.))),vec4(qs_w,0.,0.));  
- vec4 cy = qs_add(qs_add(vec4(qs_cy,0.),qs_mul(qs_ty,vec4(qs_z,0.,0.))),vec4(qs_h,0.,0.));  
+ vec4 cx = qs_add(qs_add(vec4(qs_cx),qs_mul(qs_tx,vec4(qs_z,0.,0.))),vec4(qs_w,0.,0.));
+ vec4 cy = qs_add(qs_add(vec4(qs_cy),qs_mul(qs_ty,vec4(qs_z,0.,0.))),vec4(qs_h,0.,0.));
 
  vec4 tmp;
  vec4 zx = cx;

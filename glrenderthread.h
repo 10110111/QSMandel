@@ -16,6 +16,12 @@ class QSize;
 class QGLShaderProgram;
 class QGLShader;
 
+#ifdef __GNUC__
+typedef __float128 LongReal;
+#else
+typedef long double LongReal;
+#endif
+
 class QGLRenderThread : public QThread
 {
     Q_OBJECT
@@ -23,8 +29,8 @@ public:
     explicit QGLRenderThread(QGLFrame *parent = 0);
     void resizeViewport(const QSize &size);
 
-    void setXpos(long double val) {xpos = val;}
-    void setYpos(long double val) {ypos = val;}
+    void setXpos(LongReal val) {xpos = val;}
+    void setYpos(LongReal val) {ypos = val;}
     void setZoom(double val) {zoom = ((double)(128.))*((double)(exp2(val)));}
     void setIterations(int val) {max_iterations = val;}
     void setRadius(double val) {radius = val;}
@@ -67,7 +73,7 @@ private:
     QGLShaderProgram *ShaderProgram;
     QGLShader *VertexShader, *FragmentShader;
 
-    long double xpos, ypos, zoom, radius;
+    LongReal xpos, ypos, zoom, radius;
     int max_iterations;
 
     int RenderMode, RenderCaps;

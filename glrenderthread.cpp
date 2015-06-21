@@ -31,7 +31,7 @@ PFNGLUNIFORM2DVPROC glUniform2dv;
 
 typedef void (APIENTRYP PFNGLUNIFORM2FVPROC) (GLint location, GLsizei count, const GLfloat *value);
 PFNGLUNIFORM2FVPROC glUniform2fv;
-PFNGLUNIFORM2FVPROC glUniform3fv;
+PFNGLUNIFORM2FVPROC glUniform4fv;
 
 typedef GLint (APIENTRYP PFNGLGETUNIFORMLOCATIONPROC) (GLuint program, const GLchar *name);
 PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
@@ -81,8 +81,8 @@ void QGLRenderThread::resizeViewport(const QSize &size)
 
 void QGLRenderThread::Drag(const QPoint &dir)
 {
-    xpos = xpos-((long double)dir.x())/zoom;
-    ypos = ypos+((long double)dir.y())/zoom;
+    xpos = xpos-((LongReal)dir.x())/zoom;
+    ypos = ypos+((LongReal)dir.y())/zoom;
 }
 
 void QGLRenderThread::setCenter(const QPoint &pos)
@@ -94,7 +94,7 @@ void QGLRenderThread::setCenter(const QPoint &pos)
 // special Point-and-Zoom function
 void QGLRenderThread::Zoom(bool dir, const QPoint &pos, double zfact)
 {
-    long double c;
+    LongReal c;
 
     c = xpos+(pos.x()-w/2)/zoom;
     xpos = (xpos+((dir)?1.0:-1.0)*(c-xpos)*((dir)?(1.0-1.0/zfact):(zfact-1.0)));
@@ -198,7 +198,7 @@ void QGLRenderThread::GLInit(void)
 
     glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) GLFrame->context()->getProcAddress("glGetUniformLocation");
     glUniform2fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform2fv");
-    glUniform3fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform3fv");
+    glUniform4fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform4fv");
 
     // FIXME: will have to use glGetStringi() when we actually switch to OpenGL 3.3, since glGetString() isn't supported in core profile
     const GLubyte* str=glGetString(GL_EXTENSIONS);
@@ -235,7 +235,7 @@ void QGLRenderThread::paintGL(void)
 {
   double tmp, dvec2[2];
   float vec2[2];
-  float vec3[3];
+  float vec4[4];
 
     // common shader values
     ShaderProgram->setUniformValue("iterations", max_iterations);
@@ -298,15 +298,17 @@ void QGLRenderThread::paintGL(void)
                 break;
 
         case 3: // emulated quadruple precision shader values (quad-single)
-                vec3[0] = xpos;
-                vec3[1] = xpos - vec3[0];
-                vec3[2] = xpos - vec3[0] - vec3[1];
-                glUniform3fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 1, vec3);
+                vec4[0] = xpos;
+                vec4[1] = xpos - vec4[0];
+                vec4[2] = xpos - vec4[0] - vec4[1];
+                vec4[3] = xpos - vec4[0] - vec4[1] - vec4[2];
+                glUniform4fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cx"), 1, vec4);
 
-                vec3[0] = ypos;
-                vec3[1] = ypos - vec3[0];
-                vec3[2] = ypos - vec3[0] - vec3[1];
-                glUniform3fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 1, vec3);
+                vec4[0] = ypos;
+                vec4[1] = ypos - vec4[0];
+                vec4[2] = ypos - vec4[0] - vec4[1];
+                vec4[3] = ypos - vec4[0] - vec4[1] - vec4[2];
+                glUniform4fv(glGetUniformLocation(ShaderProgram->programId(), "qs_cy"), 1, vec4);
 
                 tmp= 1./zoom;
                 vec2[0] = (float)tmp;

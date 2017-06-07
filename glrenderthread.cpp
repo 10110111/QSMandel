@@ -1,41 +1,12 @@
 // created by Henry Thasler - thasler.org/blog
 
+#include "glad/glad.h"
 #include <QGLShader>
 #include <QFileInfo>
 #include <QElapsedTimer>
 
 #include "glframe.h"
 #include "glrenderthread.h"
-
-typedef char GLchar;
-
-#ifndef Q_WS_MAC
-# ifndef APIENTRYP
-#   ifdef APIENTRY
-#     define APIENTRYP APIENTRY *
-#   else
-#     define APIENTRY
-#     define APIENTRYP *
-#   endif
-# endif
-#else
-# define APIENTRY
-# define APIENTRYP *
-#endif
-
-typedef void (APIENTRYP PFNGLUNIFORM1DVPROC) (GLint location, GLsizei count, const GLdouble *value);
-PFNGLUNIFORM1DVPROC glUniform1dv;
-
-typedef void (APIENTRYP PFNGLUNIFORM2DVPROC) (GLint location, GLsizei count, const GLdouble *value);
-PFNGLUNIFORM2DVPROC glUniform2dv;
-
-typedef void (APIENTRYP PFNGLUNIFORM2FVPROC) (GLint location, GLsizei count, const GLfloat *value);
-PFNGLUNIFORM2FVPROC glUniform2fv;
-PFNGLUNIFORM2FVPROC glUniform4fv;
-
-typedef GLint (APIENTRYP PFNGLGETUNIFORMLOCATIONPROC) (GLuint program, const GLchar *name);
-PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
-
 
 QGLRenderThread::QGLRenderThread(QGLFrame *parent) :
     QThread(),
@@ -184,6 +155,7 @@ void QGLRenderThread::run()
 
 void QGLRenderThread::GLInit(void)
 {
+    gladLoadGL();
     glClearColor(0.25f, 0.25f, 0.4f, 0.0f);     // Background => dark blue
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
@@ -196,18 +168,8 @@ void QGLRenderThread::GLInit(void)
     qDebug() << "OpenGL: " << QString((char*)pVersion);
     qDebug() << "GLSL: " << QString((char*)pShaderVersion);
 
-    glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC) GLFrame->context()->getProcAddress("glGetUniformLocation");
-    glUniform2fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform2fv");
-    glUniform4fv = (PFNGLUNIFORM2FVPROC) GLFrame->context()->getProcAddress("glUniform4fv");
-
-    // FIXME: will have to use glGetStringi() when we actually switch to OpenGL 3.3, since glGetString() isn't supported in core profile
-    const GLubyte* str=glGetString(GL_EXTENSIONS);
-    bool ARB_gpu_shader_fp64_available=strstr((const char*)str,"GL_ARB_gpu_shader_fp64");
-    if(ARB_gpu_shader_fp64_available) // did we get all handles?
+    if(GLAD_GL_ARB_gpu_shader_fp64)
         {
-        // collect special handles four double precision
-        glUniform1dv = (PFNGLUNIFORM1DVPROC) GLFrame->context()->getProcAddress("glUniform1dv");
-        glUniform2dv = (PFNGLUNIFORM2DVPROC) GLFrame->context()->getProcAddress("glUniform2dv");
         qDebug() << "Yay! Hardware accelerated double precision enabled.";
         RenderCaps |= 0x04; // yes, we can perform double precision rendering
         }

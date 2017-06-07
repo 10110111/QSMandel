@@ -105,8 +105,8 @@ vec2 ds_set(float a)
 
 float emandel(void)
 {
-  vec2 e_tx = ds_set(gl_TexCoord[0].x);
-  vec2 e_ty = ds_set(gl_TexCoord[0].y);
+  vec2 e_tx = ds_set(gl_FragCoord.x);
+  vec2 e_ty = ds_set(gl_FragCoord.y);
   
   // compute position in complex plane from current pixel
   vec2 cx = ds_add(ds_add(vec2(ds_cx0, ds_cx1),ds_mul(e_tx,vec2(ds_z0, ds_z1))),vec2(ds_w0, ds_w1));  

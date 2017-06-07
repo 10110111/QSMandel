@@ -5,6 +5,9 @@
 #include <QFileInfo>
 #include <QElapsedTimer>
 
+#include <sstream>
+#include <algorithm>
+
 #include "glframe.h"
 #include "glrenderthread.h"
 
@@ -124,8 +127,7 @@ void QGLRenderThread::run()
             }
 
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glLoadIdentity();
+        glClear(GL_COLOR_BUFFER_BIT);
 
         paintGL(); // render actual frame
 
@@ -152,13 +154,32 @@ void QGLRenderThread::run()
         }
 }
 
+void QGLRenderThread::setupBuffers()
+{
+    glGenVertexArrays(1,&vao);
+    glBindVertexArray(vao);
+    glGenBuffers(1,&vbo);
+    glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    const int vertices[]={
+                             1, -1,
+                            -1, -1,
+                             1,  1,
+                            -1,  1
+                         };
+    glBufferData(GL_ARRAY_BUFFER,sizeof vertices,vertices,GL_STATIC_DRAW);
+    const int location=0;
+    glVertexAttribPointer(location,2,GL_INT,false,2*sizeof(vertices[0]),0);
+    glEnableVertexAttribArray(location);
+    glBindVertexArray(0);
+}
 
 void QGLRenderThread::GLInit(void)
 {
     gladLoadGL();
+    if(!GLAD_GL_VERSION_2_1)
+        qFatal("OpenGL 2.1 is not supported");
+    setupBuffers();
     glClearColor(0.25f, 0.25f, 0.4f, 0.0f);     // Background => dark blue
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
 
     const GLubyte* pGPU = glGetString(GL_RENDERER);
     const GLubyte* pVersion = glGetString(GL_VERSION);
@@ -182,14 +203,6 @@ void QGLRenderThread::GLInit(void)
 void QGLRenderThread::GLResize(int& width, int& height)
 {
     glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
-
-    glLoadIdentity();
-
-    glOrtho (0, width, 0, height, 0, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 }
 
 
@@ -293,12 +306,9 @@ void QGLRenderThread::paintGL(void)
 
 
     // draw canvas
-    glBegin(GL_QUADS);
-        glNormal3f(0.,0.,1.); glColor3f(1.,0.,0.); glTexCoord2f(0, 0); glVertex3i(0, 0, 0);
-        glNormal3f(0.,0.,1.); glColor3f(1.,1.,0.); glTexCoord2f(w, 0); glVertex3i(w, 0, 0);
-        glNormal3f(0.,0.,1.); glColor3f(1.,1.,1.); glTexCoord2f(w, h); glVertex3i(w, h, 0);
-        glNormal3f(0.,0.,1.); glColor3f(1.,0.,1.); glTexCoord2f(0, h); glVertex3i(0, h, 0);
-    glEnd();
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glBindVertexArray(0);
 }
 
 void QGLRenderThread::LoadShader(const QString& vshader,const QString& fshader)

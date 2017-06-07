@@ -11,7 +11,7 @@ uniform float f_z;
 
 float fmandel(void)
 {
-  vec2 c = vec2(f_cx, f_cy) + gl_TexCoord[0].xy*f_z + vec2(f_sx,f_sy);
+  vec2 c = vec2(f_cx, f_cy) + gl_FragCoord.xy*f_z + vec2(f_sx,f_sy);
   vec2 z=c;
 
   for(int n=0; n<iterations; n++)

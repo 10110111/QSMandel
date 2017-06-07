@@ -37,6 +37,7 @@ protected:
     QPoint DragStart;
 
 private:
+    QGLFormat getFormat() const;
 
 };
 

@@ -520,8 +520,8 @@ float qs_compare(vec4 qsa, vec4 qsb)
 
 float qs_mandel(void)
 {
- vec4 qs_tx = vec4(gl_TexCoord[0].x, vec3(0.));		// get position of current pixel
- vec4 qs_ty = vec4(gl_TexCoord[0].y, vec3(0.));
+ vec4 qs_tx = vec4(gl_FragCoord.x, vec3(0.));		// get position of current pixel
+ vec4 qs_ty = vec4(gl_FragCoord.y, vec3(0.));
 
  // initialize complex variable with respect to current position, zoom, ...
  vec4 cx = qs_add(qs_add(vec4(qs_cx),qs_mul(qs_tx,vec4(qs_z,0.,0.))),vec4(qs_w,0.,0.));

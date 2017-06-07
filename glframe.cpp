@@ -3,8 +3,16 @@
 
 #include "glframe.h"
 
+QGLFormat QGLFrame::getFormat() const
+{
+    QGLFormat fmt;
+    fmt.setVersion(3,2);
+    fmt.setProfile(QGLFormat::CoreProfile);
+    return fmt;
+}
+
 QGLFrame::QGLFrame(QWidget *parent) :
-    QGLWidget(parent),
+    QGLWidget(getFormat(),parent),
     RenderThread(this)
 {
     setAutoBufferSwap(false);

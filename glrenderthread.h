@@ -56,6 +56,8 @@ protected:
     void GLResize(int& width, int& height);
     void paintGL(void);
     void LoadShader(const QString& vshader,const QString& fshader);
+private:
+    void setupBuffers();
 
 signals:
     void showFPS(QString fps);
@@ -65,6 +67,7 @@ public slots:
 
 
 private:
+    GLuint vbo, vao;
     bool doRendering, doResize, UpdateFrame, reloadShader, benchmark;
     int w, h, FrameCounter;
 

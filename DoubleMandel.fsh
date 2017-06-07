@@ -1,4 +1,4 @@
-#version 150 compatibility
+#version 120
 #extension GL_ARB_gpu_shader_fp64: enable
 
 uniform int iterations;
@@ -11,7 +11,7 @@ uniform double d_z;
 
 float dmandel(void)
 {
- dvec2 c = d_c + dvec2(gl_TexCoord[0].xy)*d_z + d_s;
+ dvec2 c = d_c + dvec2(gl_FragCoord.xy)*d_z + d_s;
  dvec2 z = c;
 
   for(int n=0; n<iterations; n++)

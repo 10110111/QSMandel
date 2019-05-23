@@ -74,8 +74,8 @@ float a1, a2, b1, b2, cona, conb, split = 8193.;
 
  cona = dsa.x * split;
  conb = dsb.x * split;
- a1 = cona - (cona - dsa.x);
- b1 = conb - (conb - dsb.x);
+ a1 = cona - (hide(cona) - dsa.x);
+ b1 = conb - (hide(conb) - dsb.x);
  a2 = dsa.x - a1;
  b2 = dsb.x - b1;
 

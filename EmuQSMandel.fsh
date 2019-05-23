@@ -46,7 +46,7 @@ vec2 split(float a)
 {
 float t, hi;
  t = 8193. * a;
- hi = t - (t-a);
+ hi = hide(t - hide(t-a));
  return vec2(hi, a-hi);
 }
 
